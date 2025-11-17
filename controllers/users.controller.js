@@ -2,13 +2,36 @@ const { Comment } = require("../models/comments.model");
 const { Post } = require("../models/posts.model");
 const { User } = require("../models/users.model");
 
+//Libraries
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+const dotenv = require('dotenv')
+
+dotenv.config({path: './config.env', quiet: true})
 
 //Utils
 const { catchAsync } = require("../utils/catchAsync.util");
 const { AppError } = require("../utils/appError.util");
 
 const getAllUsers = catchAsync( async (req, res, next) => {
+
+    let token;
+
+    if(req.headers.authorization && req.headers.authorization.startsWith('Bearer') ) {
+        token = req.headers.authorization.split(' ')[1]
+    }
+
+    if (!token) {
+        return next(new AppError('token no valido', 403))
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+
+    const user = await User.findOne( {where: { id: decoded.id, status: 'active' }})
+
+    if(!user){
+       return next(new AppError('tu sesion no es valida en este mimento', 403))
+    }    
 
     const users = await User.findAll({ 
         attributes:  ['name','lastName', 'email', 'password'],
@@ -99,17 +122,25 @@ const login = catchAsync( async( req, res, next ) => {
     const user = await User.findOne({ where: {email, status: 'active'}})
 
     if(!user){
-        return next(new AppError('email not found', 404))
+        return next(new AppError('credentials invalid', 400))
     }
 
     const isValidPassword = await bcrypt.compare( password, user.password)
 
     if(!isValidPassword) {
-        return next( new AppError('credentials invalid', 404))
+        return next( new AppError('credentials invalid', 400))
     }
 
+    //  desde node generamos nuestra firma seguna con el comando 
+    // require('crypto').randomBytes(64).toString('hex')
+
+    const token = await jwt.sign({ id: user.id}, process.env.JWT_SECRET, { 
+        expiresIn: '30d'
+    } )
+
     res.status(200).json({
-        status: 'success'
+        status: 'success',
+        token
     })
 
 })

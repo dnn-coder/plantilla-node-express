@@ -3,8 +3,13 @@ const { getAllPosts,
         createPost, 
         getPostById, 
         updatePost, 
-        deletePost 
+        deletePost, 
+        getPostByStatus
 } = require("../controllers/posts.controller");
+
+//Middlewares
+const { postExist } = require("../middlewares/post.middleware");
+
 
 const postsRouter = express.Router()
 
@@ -12,10 +17,10 @@ postsRouter.get("/", getAllPosts)
 
 postsRouter.post("/", createPost)
 
-postsRouter.get("/:id", getPostById)
+postsRouter.get("/:id", postExist, getPostById)
 
-postsRouter.patch("/:id", updatePost)
+postsRouter.patch("/:id", postExist, updatePost)
 
-postsRouter.delete("/:id", deletePost)
+postsRouter.delete("/:id", postExist, deletePost)
 
 module.exports = { postsRouter }

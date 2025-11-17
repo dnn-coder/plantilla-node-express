@@ -15,7 +15,7 @@ const checkResult = (req, res, next) => {
     next() 
 }
 
-const createUserValidator = [
+const createUserValidator = [ 
     body('name').notEmpty().withMessage('el campo nombre no puede estar vacío'), 
     body('lastName').notEmpty().withMessage('el campo apellido no puede estar vacío'), 
     body('age').isNumeric().withMessage('la edad debe ser un numero'), 

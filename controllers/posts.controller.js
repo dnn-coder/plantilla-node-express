@@ -1,10 +1,19 @@
-const { Post } = require("../models/posts.model");
+//Utils
 const { catchAsync } = require("../utils/catchAsync.util");
-
+//Models
+const { Post } = require("../models/posts.model");
+const { User } = require("../models/users.model");
+const { Comment } = require("../models/comments.model");
 
 const getAllPosts = catchAsync( async (req, res, next) => {
 
-    const posts = await Post.findAll();
+    const posts = await Post.findAll({
+        attributes: ['title', 'content'],
+        include: [{ model: User, attributes: ['name', 'lastName']}, {model: Comment, attributes: ['comment'] ,
+        include: [{ model: User, attributes: ['name', 'lastName'] }]
+        }]
+    });
+
     res.status(200).json({
         message: "post list",
         posts   
@@ -29,14 +38,7 @@ const createPost = catchAsync( async (req, res, next) => {
 
 const getPostById = catchAsync( async (req, res, next) => {
 
-        const { id } = req.params
-        const post = await Post.findOne({ where: { id }})
-
-        if (!post) {
-            return res.status(404).json({
-                message: 'This post doesnt exist'
-            })
-        }
+        const {post} = req
 
         res.status(200).json({
             message: 'post by id',
@@ -44,17 +46,11 @@ const getPostById = catchAsync( async (req, res, next) => {
         }) 
 })
 
+
 const updatePost = catchAsync( async (req, res, next) => {
-    const { id } = req.params
+
+    const { post } = req;
     const { title, content } = req.body
-
-    const post = await Post.findOne({ where: { id }})
-
-    if (!post) {
-        return res.status(404).json({
-            message: 'this post doesnt exist'
-        })
-    }
 
     await post.update({
         title, content
@@ -67,14 +63,7 @@ const updatePost = catchAsync( async (req, res, next) => {
 })
 
 const deletePost = catchAsync( async (req, res, next) => {
-    const { id } = req.params;
-    const post = await Post.findOne({ where: { id }})
-
-    if( !post ) {
-        return res.status(404).json({
-            message: 'this post doesnt exist'
-        })
-    }
+    const { post } = req
 
     await post.update({ status: 'deleted'})
 

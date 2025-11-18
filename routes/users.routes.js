@@ -13,10 +13,12 @@ const {
 //Middlewares
 const { createUserValidator } = require("../middlewares/validators.middleware");
 const { userExist } = require("../middlewares/user.middleware");
+const { protectSesion } = require("../middlewares/auth.middleware");
+
 
 const usersRouter = express.Router()
 
-usersRouter.get("/", getAllUsers)
+usersRouter.get("/", protectSesion, getAllUsers)
  
 usersRouter.post( "/", createUserValidator, createUser )
 

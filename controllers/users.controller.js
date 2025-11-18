@@ -15,23 +15,7 @@ const { AppError } = require("../utils/appError.util");
 
 const getAllUsers = catchAsync( async (req, res, next) => {
 
-    let token;
-
-    if(req.headers.authorization && req.headers.authorization.startsWith('Bearer') ) {
-        token = req.headers.authorization.split(' ')[1]
-    }
-
-    if (!token) {
-        return next(new AppError('token no valido', 403))
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET)
-
-    const user = await User.findOne( {where: { id: decoded.id, status: 'active' }})
-
-    if(!user){
-       return next(new AppError('tu sesion no es valida en este mimento', 403))
-    }    
+    
 
     const users = await User.findAll({ 
         attributes:  ['name','lastName', 'email', 'password'],
@@ -134,9 +118,9 @@ const login = catchAsync( async( req, res, next ) => {
     //  desde node generamos nuestra firma seguna con el comando 
     // require('crypto').randomBytes(64).toString('hex')
 
-    const token = await jwt.sign({ id: user.id}, process.env.JWT_SECRET, { 
+    const token = await jwt.sign({ id: user.id }, process.env.JWT_SECRET, { 
         expiresIn: '30d'
-    } )
+    })
 
     res.status(200).json({
         status: 'success',

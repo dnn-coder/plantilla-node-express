@@ -18,7 +18,7 @@ const getAllUsers = catchAsync( async (req, res, next) => {
     
 
     const users = await User.findAll({ 
-        attributes:  ['name','lastName', 'email', 'password'],
+        attributes:  ['id', 'name','lastName', 'email', 'password'],
         include: [
             { attributes: ['title', 'content'], model: Post, include: { 
             attributes: ['comment'] , model: Comment, include: { 

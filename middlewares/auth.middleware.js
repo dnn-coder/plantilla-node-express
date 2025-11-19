@@ -12,8 +12,9 @@ const dotenv = require('dotenv')
 //config env
 dotenv.config({ path: 'config.env', quiet: true})
 
-const protectSesion = catchAsync(async (req, res, next)=> {
-let token;
+const protectSesion = catchAsync( async (req, res, next) => {
+    
+    let token;
 
     if(req.headers.authorization && req.headers.authorization.startsWith('Bearer') ) {
         token = req.headers.authorization.split(' ')[1]
@@ -29,9 +30,23 @@ let token;
 
     if(!user){
        return next(new AppError('tu sesion no es valida en este momento', 403))
-    }    
+    }  
+    
+    req.sessionUser = user
 
     next()
 })
 
-module.exports = { protectSesion }
+const protectUserAccount = (req, res, next) => {
+    const { sessionUser, user } = req;
+    // alternativa para extraer el id
+    // const { id } = req.params 
+
+    if( sessionUser.id !== user.id) {
+       return next( new AppError ('el usuario en sesion no puede realizar esta petición', 403))
+    }
+
+    next()
+}
+
+module.exports = { protectSesion, protectUserAccount }

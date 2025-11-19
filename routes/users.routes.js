@@ -1,3 +1,4 @@
+//Libraries
 const express = require("express");
 
 //Constrollers
@@ -13,22 +14,32 @@ const {
 //Middlewares
 const { createUserValidator } = require("../middlewares/validators.middleware");
 const { userExist } = require("../middlewares/user.middleware");
-const { protectSesion } = require("../middlewares/auth.middleware");
-
+const { protectSesion, protectUserAccount } = require("../middlewares/auth.middleware");
 
 const usersRouter = express.Router()
 
-usersRouter.get("/", protectSesion, getAllUsers)
- 
 usersRouter.post( "/", createUserValidator, createUser )
 
 usersRouter.post( "/:login", login )
 
-usersRouter.get( "/:id", userExist, getUserById)
+usersRouter.use(protectSesion)
 
-usersRouter.patch( "/:id", userExist, updateUser)
+usersRouter.get("/", getAllUsers)
 
-usersRouter.delete( "/:id", userExist, deleteUser)
+usersRouter
+    .use("/:id", userExist )
+    .route("/:id")
+    .get(getUserById)
+    .patch(protectUserAccount, updateUser)
+    .delete(protectUserAccount, deleteUser);
+
+// usersRouter.use( "/:id", userExist)
+
+// usersRouter.get( "/:id", getUserById)
+
+// usersRouter.patch( "/:id", updateUser)
+
+// usersRouter.delete( "/:id", deleteUser)
 
 module.exports = { usersRouter }
 

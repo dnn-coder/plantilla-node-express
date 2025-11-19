@@ -9,18 +9,21 @@ const { getAllPosts,
 
 //Middlewares
 const { postExist } = require("../middlewares/post.middleware");
+const { protectSesion } = require("../middlewares/auth.middleware");
 
 
 const postsRouter = express.Router()
 
-postsRouter.get("/", getAllPosts)
+postsRouter.use(protectSesion)
 
-postsRouter.post("/", createPost)
+postsRouter.route('/').get(getAllPosts).post(createPost)
 
-postsRouter.get("/:id", postExist, getPostById)
+postsRouter
+    .use('/:id', postExist)
+    .route('/:id')
+    .get(getPostById)
+    .patch(updatePost)
+    .delete(deletePost)
 
-postsRouter.patch("/:id", postExist, updatePost)
-
-postsRouter.delete("/:id", postExist, deletePost)
 
 module.exports = { postsRouter }

@@ -8,7 +8,7 @@ const {
     getUserById, 
     updateUser, 
     deleteUser,
-    login
+    login, getUserSession
 } = require("../controllers/users.controller");
 
 //Middlewares
@@ -26,12 +26,15 @@ usersRouter.use(protectSesion)
 
 usersRouter.get("/", getAllUsers)
 
+usersRouter.get("/:profile", getUserSession)
+
 usersRouter
-    .use("/:id", userExist )
-    .route("/:id")
-    .get(getUserById)
-    .patch(protectUserAccount, updateUser)
-    .delete(protectUserAccount, deleteUser);
+.use("/:id", userExist )
+.route("/:id")
+.get(getUserById)
+.patch(protectUserAccount, updateUser)
+.delete(protectUserAccount, deleteUser);
+
 
 // usersRouter.use( "/:id", userExist)
 

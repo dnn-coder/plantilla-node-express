@@ -66,6 +66,15 @@ const getUserById = catchAsync( async (req, res, next) => {
     })
 })
 
+const getUserSession = catchAsync( async( req, res, next ) => {
+    const { sessionUser  } = req   
+
+    res.status(200).json({
+        message: 'success',
+        sessionUser
+    })
+})
+
 const updateUser = catchAsync( async (req, res, next ) => {
 
     const { user } = req
@@ -103,7 +112,7 @@ const login = catchAsync( async( req, res, next ) => {
 
     const { password, email } = req.body
 
-    const user = await User.findOne({ where: {email, status: 'active'}})
+    const user = await User.findOne({ where: { email, status: 'active' }})
 
     if(!user){
         return next(new AppError('credentials invalid', 400))
@@ -111,7 +120,7 @@ const login = catchAsync( async( req, res, next ) => {
 
     const isValidPassword = await bcrypt.compare( password, user.password)
 
-    if(!isValidPassword) {
+    if( !isValidPassword ) {
         return next( new AppError('credentials invalid', 400))
     }
 
@@ -135,5 +144,6 @@ module.exports = {
     getUserById, 
     updateUser, 
     deleteUser,
-    login
+    login, 
+    getUserSession
 }

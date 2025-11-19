@@ -9,11 +9,13 @@ const { getAllComments,
 //Middlewares
 const { commentExist } = require("../middlewares/comment.middleware");
 
+const { protectSesion } = require("../middlewares/auth.middleware")
+
 const commentRouter = express.Router()
 
-commentRouter.get("/", getAllComments)
+commentRouter.use(protectSesion)
 
-commentRouter.post("/", createComment)
+commentRouter.route('/').get(getAllComments).post(createComment)
 
 commentRouter.get("/:id", commentExist, getCommentById)
 

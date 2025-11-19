@@ -22,12 +22,14 @@ const getAllComments = catchAsync( async (req, res, next) => {
 
 const createComment = catchAsync( async (req, res, next ) => {
 
-    const { comment, postId, userId } = req.body
+    const { comment, postId } = req.body
+
+    const { sessionUser } = req
 
     const newComment = await Comment.create({
+        userId: sessionUser.id, 
         comment, 
         postId, 
-        userId, 
     })
 
     res.status(200).json({

@@ -1,6 +1,9 @@
 //licrerias
 const express = require("express")
 const rateLimit = require("express-rate-limit")
+const helmet = require('helmet')
+const compression = require("compression")
+const morgan = require("morgan")
 
 //Routers
 const { usersRouter } = require("./routes/users.routes")
@@ -19,6 +22,8 @@ const app = express()
 
 app.use(express.json())
 
+
+//limitar solicitudes desde el servidor al cliente
 const limiter = rateLimit({
 	max: 5,
 	windowMs: 60 * 1000, //1min
@@ -26,6 +31,17 @@ const limiter = rateLimit({
 })
 
 app.use(limiter)
+
+//add security headers
+app.use(helmet())
+
+//compress responses
+app.use(compression())
+
+//
+
+if ( process.env.NODE_ENV === 'development') app.use(morgan('dev'))
+else app.use(morgan('combined'))
 
 app.use('/api/v1/users', usersRouter)
 app.use('/api/v1/posts', postsRouter)

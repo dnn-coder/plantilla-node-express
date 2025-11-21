@@ -1,4 +1,4 @@
-//licrerias
+//librerias
 const express = require("express")
 const rateLimit = require("express-rate-limit")
 const helmet = require('helmet')
@@ -6,6 +6,7 @@ const compression = require("compression")
 const morgan = require("morgan")
 
 //Routers
+const { viewsRouter } = require("./routes/views.routes")
 const { usersRouter } = require("./routes/users.routes")
 const { postsRouter } = require("./routes/posts.routes")
 const { commentRouter } = require("./routes/comments.routes")
@@ -15,8 +16,6 @@ const { globalErrorHandler } = require("./controllers/error.controller")
 
 //Utils
 const { AppError } = require("./utils/appError.util")
-
-
 
 const app = express()
 
@@ -42,6 +41,8 @@ app.use(compression())
 if ( process.env.NODE_ENV === 'development') app.use(morgan('dev'))
 else app.use(morgan('combined'))
 
+//Routers
+app.use('/', viewsRouter)
 app.use('/api/v1/users', usersRouter)
 app.use('/api/v1/posts', postsRouter)
 app.use('/api/v1/comments', commentRouter)

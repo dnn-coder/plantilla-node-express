@@ -38,8 +38,7 @@ app.use(helmet())
 //compress responses
 app.use(compression())
 
-//
-
+//Mostar estados de las peticiones que se hacen en el servidor desdee la consola
 if ( process.env.NODE_ENV === 'development') app.use(morgan('dev'))
 else app.use(morgan('combined'))
 

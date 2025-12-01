@@ -4,6 +4,7 @@ const rateLimit = require("express-rate-limit")
 const helmet = require('helmet')
 const compression = require("compression")
 const morgan = require("morgan")
+const path = require("path")
 
 //Routers
 const { viewsRouter } = require("./routes/views.routes")
@@ -20,6 +21,13 @@ const { AppError } = require("./utils/appError.util")
 const app = express()
 
 app.use(express.json())
+
+//Templete engines
+app.set('view engine', 'pug')
+app.set('views', path.join(__dirname, 'views'))
+
+//Serving static files
+app.use(express.static(path.join(__dirname, 'public')))
 
 
 //limitar solicitudes desde el servidor al cliente

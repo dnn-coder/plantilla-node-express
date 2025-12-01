@@ -12,6 +12,7 @@ dotenv.config({path: './config.env', quiet: true})
 //Utils
 const { catchAsync } = require("../utils/catchAsync.util");
 const { AppError } = require("../utils/appError.util");
+const { Email } = require("../utils/email.util");
 
 const getAllUsers = catchAsync( async (req, res, next) => {
 
@@ -49,6 +50,10 @@ const createUser = catchAsync( async (req, res, next ) => {
     })
 
     newUser.password = undefined
+
+    //enviar correo de bienvenida
+
+    new Email().send()
 
     res.status(200).json({
         message: "user created succesfully",

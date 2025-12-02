@@ -4,6 +4,7 @@ const { catchAsync } = require("../utils/catchAsync.util");
 const { Post } = require("../models/posts.model");
 const { User } = require("../models/users.model");
 const { Comment } = require("../models/comments.model");
+const { Email } = require("../utils/email.util");
 
 const getAllPosts = catchAsync( async (req, res, next) => {
 
@@ -30,6 +31,8 @@ const createPost = catchAsync( async (req, res, next) => {
         content,
         userId: sessionUser.id
     })
+
+    new Email().sendNewPostEmail()
 
     res.status(200).json({
         message: "Post created succesfully",

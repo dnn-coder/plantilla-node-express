@@ -53,7 +53,7 @@ const createUser = catchAsync( async (req, res, next ) => {
 
     //enviar correo de bienvenida
 
-    new Email().send()
+    await new Email(email).sendWelcomeEmail(name)
 
     res.status(200).json({
         message: "user created succesfully",

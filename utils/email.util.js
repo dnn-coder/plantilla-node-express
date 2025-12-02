@@ -8,7 +8,9 @@ const { htmlToText } = require('html-to-text')
 dotenv.config({ path: './config.env' , quiet: true}) 
 
 class Email {
-    constructor(){}
+    constructor(to){
+        this.to = to
+    }
 
     //connect to mail service
     newTransport() {
@@ -22,19 +24,27 @@ class Email {
         })
     }
 
-    async send(){
-        const html = pug.renderFile(path.join(__dirname, '..', 'views', 'emails', 'base.pug'),
-        { title: 'Mi primer' }
+    async send(template, subject, mailData){
+        const html = pug.renderFile(path.join(__dirname, '..', 'views', 'emails', `${template}.pug`),
+        mailData
     )
     
     await this.newTransport().sendMail({
-        from: 'support@test.com',
-        to: 'test@test.com',
-        subject: 'Test',
+        from: process.env.MAIL_FROM,
+        to: this.to,
+        subject,
         html,
         text: htmlToText(html)
     })
 }
+
+    async sendWelcomeEmail(name){
+        await this.send('welcome', 'bienvendio a nuestra app ', { name })
+    }
+    
+    async sendNewPostEmail(){
+        await this.send('newPost', 'has creado un nuevo post')
+    }
 
 }
 
